@@ -1,10 +1,8 @@
 package com.example.demo.student;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

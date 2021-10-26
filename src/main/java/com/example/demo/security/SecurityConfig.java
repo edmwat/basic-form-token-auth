@@ -2,6 +2,8 @@ package com.example.demo.security;
 
 import static com.example.demo.security.ApplicationUserRole.*;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,17 +31,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
-			//.csrf().disable()
+			.csrf().disable()
 			.authorizeRequests()
+			.antMatchers("/","index","/css/*","/js/**").permitAll()
 			.antMatchers("/api/**").hasRole(STUDENT.name())
-			/*.antMatchers(HttpMethod.GET,"/management/api/**").hasAnyRole(ADMIN.name(), ADMINTRAINEE.name())
-			.antMatchers(HttpMethod.DELETE,"/management/api/**").hasAuthority(STUDENT_WRITE.getPermissions())
-			.antMatchers(HttpMethod.PUT,"/management/api/**").hasAuthority(STUDENT_WRITE.getPermissions())
-			.antMatchers(HttpMethod.POST,"/management/api/**").hasAuthority(STUDENT_WRITE.getPermissions())	*/
 			.anyRequest()
 			.authenticated()
 			.and()
-			.httpBasic();
+			.formLogin()
+			.loginPage("/login").permitAll()
+			.defaultSuccessUrl("/courses", true)
+			.usernameParameter("username")
+			.passwordParameter("password")
+			.and()
+			.rememberMe()
+				.tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(21))
+				.key("somethingverysecured")
+				.rememberMeParameter("remember-me")
+			.and()
+			.logout()
+				.logoutUrl("/logout")
+				.clearAuthentication(true)
+				.invalidateHttpSession(true)
+				.deleteCookies("JSESSIONID","_ga","remember-me")
+			.logoutSuccessUrl("/login"); 
+			
 	}
 
 @Override
